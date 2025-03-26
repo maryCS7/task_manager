@@ -66,9 +66,18 @@ def validate_credentials(username, password):
                 return True  # successful login
     return False  # login failed - invalid credentials
 
+# get tasks for a logged-in user
+def get_user_tasks(username):
+    if not os.path.exists(TASKS_FILE):
+        return []
+    with open(TASKS_FILE, 'r') as file:
+        tasks = json.load(file)
+    return tasks.get(username, [])
+
+
 # login a user
 def login():
-    # limit attempts for app like expeience and security practice
+    # add attempt limit for security practice 
     attempts = 3
     while attempts > 0:
         username = input("👤 What's your username? ")
@@ -76,7 +85,15 @@ def login():
 
         if validate_credentials(username, password):
             print("🎉 Success! Are you ready to conquer your tasks like a pro? 🚀")
-            return username  
+            # check and display tasks
+            tasks = get_user_tasks(username)
+            if tasks:
+                print("📋 Here are your tasks:")
+                for i, task in enumerate(tasks, start=1):
+                    print(f"{i}. {task['description']} - {'✅ Completed' if task['status'] == 'Completed' else '❌ Pending'}")
+            else:
+                print("✨ You have no tasks yet. Time to get productive! 🚀")
+            return username
         
         attempts -= 1
         print(f"Invalid username or password. {attempts} attempts remaining.")
