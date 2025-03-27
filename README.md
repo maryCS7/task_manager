@@ -31,6 +31,7 @@ You’re all set to manage your tasks! 🚀
 # Features:
 
 Register: Create an account with a unique username and secure password.
+
 Login: Access your tasks with stored credentials.
 
 Task Management:
@@ -43,6 +44,7 @@ Logout: Exit the task manager.
 # Data:
 
 User credentials: Stored in user_data.txt (hashed passwords).
+
 Tasks: Saved in tasks.json per user.
 
 # Example 
