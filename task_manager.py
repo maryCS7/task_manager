@@ -40,6 +40,11 @@ def register():
         username = input("✨ Pick an awesome username: ")
 
     password = input("🛡️ Enter a strong password: ")
+    confirm_password = input("🔑 Confirm your password: ")
+    while password != confirm_password:
+        print("🚨 Passwords do not match! Please re-enter.")
+        password = input("🛡️ Enter a strong password: ")
+        confirm_password = input("🔑 Confirm your password: ")
     while not is_valid_password(password):
         print("🔒 Let's level up your security game! Your password needs to be at least 8 characters long and have a sneaky number hidden in it. 😉")
         password = input("🛡️ Enter a strong password: ")
@@ -51,6 +56,7 @@ def register():
         file.write(f"{username},{hashed_password}\n")
 
     print("🎉 Success! Your setup is complete. Are you ready to conquer your tasks like a pro? 🚀")
+    task_manager(username)
 
 # validate user credentials - check stored data
 def validate_credentials(username, password):
@@ -77,10 +83,12 @@ def get_user_tasks(username):
 def view_tasks(username):
     tasks = get_user_tasks(username)
     if tasks:
+        print()
         print("📋 Your tasks:")
         for i, task in enumerate(tasks, start=1):
             print(f"{i}. {task['description']} - {'✅ Completed' if task['status'] == 'Completed' else '🕓 Pending'}")
     else:
+        print()
         print("✨ No tasks found. Start adding some and stay productive!")
 
 # login a user
@@ -88,7 +96,7 @@ def login():
     attempts = 3
     while attempts > 0:
         username = input("👤 What's your username? ")
-        password = input("🔑 Password, please: ")
+        password = input("🔑 Password, please: ") 
 
         if validate_credentials(username, password):
             print("🎉 Success! Are you ready to conquer your tasks like a pro? 🚀")
