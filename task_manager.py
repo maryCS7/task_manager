@@ -74,10 +74,17 @@ def get_user_tasks(username):
         tasks = json.load(file)
     return tasks.get(username, [])
 
+def view_tasks(username):
+    tasks = get_user_tasks(username)
+    if tasks:
+        print("📋 Your tasks:")
+        for i, task in enumerate(tasks, start=1):
+            print(f"{i}. {task['description']} - {'✅ Completed' if task['status'] == 'Completed' else '🕓 Pending'}")
+    else:
+        print("✨ No tasks found. Start adding some and stay productive!")
 
 # login a user
 def login():
-    # add attempt limit for security practice 
     attempts = 3
     while attempts > 0:
         username = input("👤 What's your username? ")
@@ -86,13 +93,8 @@ def login():
         if validate_credentials(username, password):
             print("🎉 Success! Are you ready to conquer your tasks like a pro? 🚀")
             # check and display tasks
-            tasks = get_user_tasks(username)
-            if tasks:
-                print("📋 Here are your tasks:")
-                for i, task in enumerate(tasks, start=1):
-                    print(f"{i}. {task['description']} - {'✅ Completed' if task['status'] == 'Completed' else '❌ Pending'}")
-            else:
-                print("✨ You have no tasks yet. Time to get productive! 🚀")
+            view_tasks(username)
+            task_manager(username)
             return username
         
         attempts -= 1
@@ -100,6 +102,114 @@ def login():
     
     print("🚫 Too many failed attempts! Looks like it's time to call in reinforcements. We're here to help—reach out! 👋")
     return None
+
+# enter the task manager menu
+def task_manager(username):
+    while True:
+        print("\n📋 Task Manager Options:")
+        print("1. Add a Task")
+        print("2. View Tasks")
+        print("3. Mark a Task as Completed")
+        print("4. Delete a Task")
+        print("5. Logout")
+
+        choice = input("Choose an option (1-5): ")
+        if choice == "1":
+            add_task(username)  
+        elif choice == "2":
+            view_tasks(username)  
+        elif choice == "3":
+            mark_task_completed(username)  
+        elif choice == "4":
+            delete_task(username)  
+        elif choice == "5":
+            print("👋 Logging out. See you next time!")
+            break
+        else:
+            print("❗ Invalid choice. Please try again.")
+
+
+# add task
+def add_task(username):
+    task_description = input("📝 What's the task you want to add? ")
+    task_id = str(hash(task_description + username))  # generate task ID
+
+    # create new task
+    new_task = {
+        "id": task_id,
+        "description": task_description,
+        "status": "Pending"
+    }
+    # load tasks from the file
+    with open(TASKS_FILE, 'r') as file:
+        tasks = json.load(file)
+    # add the task to the user's list
+    if username not in tasks:
+        tasks[username] = []
+    tasks[username].append(new_task)
+    # save updated tasks back to the file
+    with open(TASKS_FILE, 'w') as file:
+        json.dump(tasks, file, indent=4)
+    print(f"✅ Task added successfully: \"{task_description}\"")
+
+# mark task completed
+def mark_task_completed(username):
+    tasks = get_user_tasks(username)
+    if not tasks:
+        print("✨ No tasks found to mark as completed!")
+        return
+
+    view_tasks(username)  # Show tasks to pick from
+    task_input = input("Enter the task number to mark as completed or press Enter to return to the menu: ")
+
+    if task_input == "":  
+        print("🔙 Returning to the task menu...")
+        return
+
+    try:
+        task_number = int(task_input)  # Convert the input to an integer
+        if 1 <= task_number <= len(tasks):  # Validate the task number
+            tasks[task_number - 1]["status"] = "Completed"
+            with open(TASKS_FILE, 'r') as file:
+                all_tasks = json.load(file)
+            all_tasks[username] = tasks
+            with open(TASKS_FILE, 'w') as file:
+                json.dump(all_tasks, file, indent=4)
+            print("✅ Task marked as completed!")
+        else:
+            print("❗ Invalid task number!")
+    except ValueError:  # handle non-integer inputs
+        print("❗ Please enter a valid number!")
+
+
+# delete a task
+def delete_task(username):
+    tasks = get_user_tasks(username)
+    if not tasks:
+        print("✨ No tasks found to delete!")
+        return
+
+    view_tasks(username)  # show tasks to pick from
+    task_input = input("Enter the task number to delete or press Enter to return to the menu: ")
+
+    if task_input == "":
+        print("🔙 Returning to the task menu...")
+        return
+
+    try:
+        task_number = int(task_input)  
+        if 1 <= task_number <= len(tasks):  #
+            deleted_task = tasks.pop(task_number - 1)
+            with open(TASKS_FILE, 'r') as file:
+                all_tasks = json.load(file)
+            all_tasks[username] = tasks
+            with open(TASKS_FILE, 'w') as file:
+                json.dump(all_tasks, file, indent=4)
+            print(f"🗑️ Task deleted: \"{deleted_task['description']}\"")
+        else:
+            print("❗ Invalid task number!")
+    except ValueError: 
+        print("❗ Please enter a valid number!")
 
 
 
