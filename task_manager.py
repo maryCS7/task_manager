@@ -167,7 +167,7 @@ def mark_task_completed(username):
         print("✨ No tasks found to mark as completed!")
         return
 
-    view_tasks(username)  # Show tasks to pick from
+    view_tasks(username) 
     task_input = input("Enter the task number to mark as completed or press Enter to return to the menu: ")
 
     if task_input == "":  
@@ -175,8 +175,8 @@ def mark_task_completed(username):
         return
 
     try:
-        task_number = int(task_input)  # Convert the input to an integer
-        if 1 <= task_number <= len(tasks):  # Validate the task number
+        task_number = int(task_input) 
+        if 1 <= task_number <= len(tasks):  
             tasks[task_number - 1]["status"] = "Completed"
             with open(TASKS_FILE, 'r') as file:
                 all_tasks = json.load(file)
@@ -206,7 +206,7 @@ def delete_task(username):
 
     try:
         task_number = int(task_input)  
-        if 1 <= task_number <= len(tasks):  #
+        if 1 <= task_number <= len(tasks):  
             deleted_task = tasks.pop(task_number - 1)
             with open(TASKS_FILE, 'r') as file:
                 all_tasks = json.load(file)
@@ -219,7 +219,32 @@ def delete_task(username):
     except ValueError: 
         print("❗ Please enter a valid number!")
 
+# add main menu for app
+def main():
+    print()
+    print("🌟 Welcome to the Task Manager App! 🌟")
+    print("Your ultimate productivity companion. Let's get started! 🚀")
 
+    while True:
+        print("\n🌟 Main Menu 🌟")
+        print("1. ✍️ Register")
+        print("2. 🔑 Login")
+        print("3. 🚪 Exit")
+
+        choice = input("Choose an option (1-3): ")
+        if choice == "1":
+            register()  
+        elif choice == "2":
+            login()  
+        elif choice == "3":
+            print("👋 Goodbye! Stay productive!")
+            break
+        else:
+            print("❌ Invalid choice. Please try again.")
+
+# call the main() to start  automatically:
+if __name__ == "__main__":
+    main()
 
   
 
